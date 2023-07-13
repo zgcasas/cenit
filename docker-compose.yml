@@ -6,12 +6,14 @@ volumes:
 
 services:
   ui:
-    image: ghcr.io/cenit-io/ui:latest
+    build: ../cenit-ui/.
     ports:
       - "3002:80"
     environment:
       - REACT_APP_LOCALHOST=http://localhost:3002
       - REACT_APP_CENIT_HOST=http://localhost:3000
+      - REACT_APP_OAUTH_CLIENT_ID=64aeca4fc3e239000141af6a39ahcTAJwMV2qJTyWsAW11yzAfPDsVYWjWSeXRY1jw23B7nEVUHXxx5Hsx
+      - REACT_APP_OAUTH_CLIENT_SECRET=ZhCof6cpeWzd-52JyB_shWw5TmEQR5VrCz5vC21P1eSs35MubZyJAbVZyeUY
   server:
     build: .
     ports:
@@ -20,7 +22,7 @@ services:
       - MONGODB_URI=mongodb://mongo_server/cenit
       - REDIS_HOST=redis
       - HOMEPAGE=http://localhost:3000
-      - ADMIN_UI=http://localhost:3002
+      - CENIT_UI=http://localhost:3002
       - RABBITMQ_BIGWIG_TX_URL=amqp://cenit_rabbit:cenit_rabbit@rabbitmq/cenit_rabbit_vhost
       - SCHEDULER_LOOKUP_INTERVAL=8
       - UNICORN_WORKERS=4
@@ -43,8 +45,12 @@ services:
     restart: always
     volumes:
       - mongodb-data:/data/db
+    ports:
+      - "27017:27017"
   redis:
     image: redis:5
     volumes:
       - redis-data:/data
+    ports:
+      - "6379:6379"
     command: ["redis-server", "--appendonly", "yes"]
